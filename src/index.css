@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #050505;
+    color: #f4f4f5;
+    margin: 0;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: rgba(249, 115, 22, 0.3);
+    color: #ffffff;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "BandSync - Live Stage Synchronizer",
+  "description": "Zero-latency live stage synchronizer for bands with synthesised click tracks, voice cues, role-specific HUD, MIDI foot pedal mapping, and setlist management.",
+  "requestFramePermissions": ["midi", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
