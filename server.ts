@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import http from 'http';
 import path from 'path';
@@ -20,7 +21,7 @@ function getGeminiClient(): GoogleGenAI {
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'aistudio-build',
+          'User-Agent': 'BandSync-Live-Synchroniser/1.0',
         },
       },
     });
@@ -483,7 +484,9 @@ Respond with ONLY valid JSON inside \`\`\`json ... \`\`\` code block (or pure JS
   }
 
   server.listen(PORT, '0.0.0.0', () => {
-    console.log(`BandSync stage engine running on http://0.0.0.0:${PORT}`);
+    console.log(`\n  BandSync stage engine running:`);
+    console.log(`  ➜ Local:   http://localhost:${PORT}`);
+    console.log(`  ➜ Network: http://127.0.0.1:${PORT}\n`);
   });
 }
 

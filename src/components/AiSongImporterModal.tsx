@@ -62,7 +62,7 @@ export const AiSongImporterModal: React.FC<AiSongImporterModalProps> = ({
     setAnalyzedSong(null);
 
     try {
-      setLoadingStep('Connecting to Google Gemini API & searching track catalog...');
+      setLoadingStep('Connecting to AI Song Engine & analyzing track catalog...');
       const song = await aiTrackService.analyzeTrack(inputQuery.trim(), customKey.trim() || undefined);
       setAnalyzedSong(song);
     } catch (err: any) {
@@ -513,7 +513,10 @@ export const AiSongImporterModal: React.FC<AiSongImporterModalProps> = ({
 
         {/* Footer */}
         <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 flex items-center justify-between text-xs text-zinc-500">
-          <span>Powered by Google Gemini 3.7 Flash</span>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-zinc-400 font-medium">BandSync AI Auto-Charting Engine</span>
+          </div>
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold transition cursor-pointer"

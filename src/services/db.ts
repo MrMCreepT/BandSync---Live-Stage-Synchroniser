@@ -3,8 +3,6 @@ import {
   ALL_DEFAULT_SONGS,
   DEFAULT_SETLISTS,
   HOTT_SHOTS_AUGUST_SETLIST,
-  SAMPLE_SONGS,
-  SAMPLE_SETLIST,
   SAMPLE_GIGS,
   SAMPLE_STAGE_RIDER,
   SAMPLE_BAND_PROFILE,
@@ -34,18 +32,24 @@ class StageDatabase {
   private initDefaults() {
     if (typeof localStorage === 'undefined') return;
 
-    // Migrate or initialize songs
+    // Migrate or initialize songs (purely authentic songs, removing any mock IDs)
     const storedSongsJson = localStorage.getItem(DB_KEYS.SONGS);
     if (!storedSongsJson) {
       localStorage.setItem(DB_KEYS.SONGS, JSON.stringify(ALL_DEFAULT_SONGS));
     } else {
       try {
-        const storedSongs: Song[] = JSON.parse(storedSongsJson);
-        const existingIds = new Set(storedSongs.map((s) => s.id));
-        let changed = false;
+        let storedSongs: Song[] = JSON.parse(storedSongsJson);
+        // Remove mock song IDs if present from previous templates
+        const mockIds = new Set(['song_1', 'song_2', 'song_3', 'song_4']);
+        storedSongs = storedSongs.filter((s) => !mockIds.has(s.id));
+        let changed = true;
         ALL_DEFAULT_SONGS.forEach((defaultSong) => {
-          if (!existingIds.has(defaultSong.id)) {
+          const existingIdx = storedSongs.findIndex((s) => s.id === defaultSong.id);
+          if (existingIdx === -1) {
             storedSongs.push(defaultSong);
+            changed = true;
+          } else if ((defaultSong.sections?.length || 0) > (storedSongs[existingIdx].sections?.length || 0) || !storedSongs[existingIdx].sections?.[0]?.chords) {
+            storedSongs[existingIdx] = defaultSong;
             changed = true;
           }
         });
@@ -67,18 +71,19 @@ class StageDatabase {
         const existingSetlistIds = new Set(storedSetlists.map((s) => s.id));
         let changed = false;
         
-        // Upgrade Hott Shots setlist if present without setGroup
+        // Upgrade Hott Shots setlist if present
         const hottIdx = storedSetlists.findIndex((s) => s.id === HOTT_SHOTS_AUGUST_SETLIST.id);
         if (hottIdx >= 0) {
-          if (!storedSetlists[hottIdx].items?.[0]?.setGroup || storedSetlists[hottIdx].items.length !== 29) {
-            storedSetlists[hottIdx] = HOTT_SHOTS_AUGUST_SETLIST;
-            changed = true;
-          }
+          storedSetlists[hottIdx] = HOTT_SHOTS_AUGUST_SETLIST;
+          changed = true;
+        } else {
+          storedSetlists.unshift(HOTT_SHOTS_AUGUST_SETLIST);
+          changed = true;
         }
 
         DEFAULT_SETLISTS.forEach((defaultSetlist) => {
           if (!existingSetlistIds.has(defaultSetlist.id)) {
-            storedSetlists.unshift(defaultSetlist);
+            storedSetlists.push(defaultSetlist);
             changed = true;
           }
         });
@@ -90,7 +95,8 @@ class StageDatabase {
       }
     }
 
-    if (!localStorage.getItem(DB_KEYS.ACTIVE_SETLIST_ID)) {
+    const activeId = localStorage.getItem(DB_KEYS.ACTIVE_SETLIST_ID);
+    if (!activeId || activeId === 'setlist_main') {
       localStorage.setItem(DB_KEYS.ACTIVE_SETLIST_ID, HOTT_SHOTS_AUGUST_SETLIST.id);
     }
     if (!localStorage.getItem(DB_KEYS.GIGS)) {
